@@ -70,6 +70,41 @@ public class DaumNews {
             System.out.println("기사 제목 : " + newsTitle);
             System.out.println("기사 링크 : " + newsLink);
 
+            // 2024-03-28
+            // 해당 기사 페이지의 기사 내용 가져오기
+            // 1. 기사 페이지 url 설정
+            // 2. 기사 페이지의 html 태그를 받을 Document 객체 생성
+            // 3. Jsoup.Connect()를 사용하여 기사 페이지 접속
+            // 4. parser()를 사용하여 가져온  html 태그를 객체에 저장
+            // 5. 기사 내용이 있는 태그를 Select를 사용하여 검색
+            // 6. 기사 내용 가져오기
+
+            // 기사 내용 페이지의 html 태그를 받기 위한 Document 객체 생성
+            Document subhtml = null;
+            try {
+                // 위에서 받아온 기사 링크를 이용하여 해당 기사 내용 페이지에 접속
+                Connection.Response subres = Jsoup.connect(newsLink).method(Connection.Method.GET)
+                        .execute();
+                // 기사 내용 페이지의 내용을 가져와서 html로 파싱 후 저장
+                subhtml = subres.parse();
+            }catch (IOException e){
+                System.out.println("jsoup 사용 중 오류가 발생했습니다.");
+                e.printStackTrace();
+            }
+
+            // 기사 내용 중 본문 부분을 검색
+            // 기사 내용 본문의 부모 태그의 class가 article_view 이므로 select()를
+            // 사용하여 검색함
+            Element subAriticle_view = subhtml.select(".article_view").first();
+            // 기사 내용은 p 태그를 사용하여 한 문단씩 작성되어 있으므로 select()를 이용하여 p 태그를 검색
+            Elements subNewsPlist = subAriticle_view.select("p");
+            // 기사 내용이 있는 첫번째 p 태그를 선택
+            // 기사에 따라 첫번째 p 태그에 내용이 없을 수 있으므로 확인이 필요함
+            Element subNewsPtag =  subNewsPlist.get(0);
+            // 기사 내용을 text()를 사용하여 가져옴
+            String subNews = subNewsPtag.text();
+            System.out.println("뉴스 내용 : " + subNews);
+
             System.out.println("------------------------\n");
         }
 //        Elements cont_thumb = item_issue.get(0).select(".cont_thumb");
